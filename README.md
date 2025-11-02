@@ -1,713 +1,782 @@
-# TALAS Reading Assessment System - Requirements Document
+# 📚 TALAS Reading Assessment System - User Manual
 
-## System Overview
-
-**System Name:** TALAS (Teaching and Learning Assessment System) - Reading Assessment System  
-**Version:** v1.0  
-**Framework:** Laravel 11  
-**Database:** MySQL/SQLite  
-**Purpose:** Comprehensive reading assessment platform for educational institutions in Region 1, Philippines
+**Version:** 1.0  
+**System:** Teaching and Learning Assessment System (TALAS)
 
 ---
 
-## 1. FUNCTIONAL REQUIREMENTS
+## Table of Contents
 
-### 1.1 User Management & Authentication
+1. [How to Log In](#how-to-log-in)
+2. [Logging In as Administrator (CLMD Coordinator)](#logging-in-as-administrator-clmd-coordinator)
+3. [Logging In as Teacher](#logging-in-as-teacher)
+4. [Logging In as Coordinator](#logging-in-as-coordinator)
+5. [Quick Reference](#quick-reference)
 
-#### 1.1.1 User Roles (Hierarchical Structure)
-- **CLMD Coordinator** (`clmd_coordinator`)
-  - Highest level access control
-  - Can manage all regions
-  - Can create Division Coordinators
-  - Full system administration capabilities
-  
-- **Division Coordinator** (`division_coordinator`)
-  - Regional oversight role
-  - Must be assigned to a specific division
-  - Can create District Coordinators
-  - Manages users within their division
-  
-- **District Coordinator** (`district_coordinator`)
-  - District oversight role
-  - Must be assigned to a specific district
-  - Can create School Coordinators
-  - Manages users within their district
-  
-- **School Coordinator** (`school_coordinator`)
-  - School-level oversight
-  - Must be assigned to a specific school
-  - Can create Teachers
-  - Manages teachers within their school
-  
-- **Teacher** (`teacher`)
-  - Classroom level access
-  - Must be assigned to a specific school
-  - Conducts reading assessments
-  - Manages students and classes
+---
 
-#### 1.1.2 Authentication Features
-- User login with email and password
-- Password encryption using Laravel hashing
-- Remember token functionality for persistent login
-- Terms of Service acceptance requirement on first login
-- Password reset functionality (no email verification required)
-- Logout capability
-- Session management
+## How to Log In
 
-#### 1.1.3 User Account Management
-- Create new user accounts
-- Edit existing user information
-- Deactivate user accounts (soft delete)
-- Reactivate deactivated accounts
-- View user profiles
-- Profile picture management (Base64 storage)
-- Email uniqueness validation
-- Role-based user creation (hierarchical permissions)
-- User creation tracking (created_by field)
-- Search and filter users by name, email, or role
-- Export user data to CSV format
+### Step-by-Step Login Process
 
-#### 1.1.4 Location-Based Access Control
-- Users must be assigned to appropriate locations based on role:
-  - Teachers: division_id, district_id, school_id
-  - School Coordinators: division_id, district_id, school_id
-  - District Coordinators: division_id, district_id
-  - Division Coordinators: division_id
-  - CLMD Coordinators: No location required
-- Data isolation based on user's location assignment
-- Automatic filtering of data based on hierarchical scope
-- Location hierarchy: Region → Division → District → School
+1. **Open your web browser** (Chrome, Firefox, Safari, or Edge)
+2. **Navigate to the TALAS login page** (URL provided by your administrator)
+3. **You will see the login form** with:
+   - Email field
+   - Password field
+   - "Remember me" checkbox (optional)
+   - Terms of Service checkbox (required on first login)
+   - "Forgot Password?" link
+4. **Enter your credentials**:
+   - Type your email address
+   - Type your password
+   - If this is your first login, check the "I accept the Terms of Service" box
+5. **Click "Log In"**
+6. **You will be redirected to your dashboard** based on your role
 
-### 1.2 Location Management
+### First-Time Login
 
-#### 1.2.1 Hierarchical Structure
-- **Region Management**
-  - Create, read, update, delete regions
-  - Currently supports Region 1 only
-  - Region-to-Division relationships
-  
-- **Division Management**
-  - Create, read, update, delete divisions
-  - Link to parent region
-  - Division-to-District relationships
-  
-- **District Management**
-  - Create, read, update, delete districts
-  - Link to parent division
-  - District-to-School relationships
-  
-- **School Management**
-  - Create, read, update, delete schools
-  - Link to parent district
-  - School-to-Class relationships
-  - Active/Inactive status management
+On your first login:
+1. You **must** check the "I accept the Terms of Service" checkbox
+2. Read the terms before accepting
+3. After logging in, you'll see your dashboard
+4. **Recommended**: Go to your profile and change your password
 
-#### 1.2.2 Location Data APIs
-- Get all regions: `/api/regions`
-- Get divisions by region: `/api/divisions/{region}`
-- Get districts by division: `/api/districts/{division}`
-- Get schools by district: `/api/schools/{district}`
+### Default Test Accounts
 
-### 1.3 Student Management
+- **Admin (CLMD Coordinator)**: `admin@talas.com` / `admin123`
+- **Division Coordinator**: `michael.brown@talas.com` / `admin123`
+- **Teacher**: `john.smith@talas.com` / `admin123`
 
-#### 1.3.1 Student Profile Management
-- Create student profiles with:
-  - Student ID
-  - First name
-  - Last name
-  - Grade level (limited to Grade 11 and 12)
-  - Class assignment
-  - School assignment
-  - Active/Inactive status
-  - Strand (optional)
-- Edit student information
-- Delete student records
-- View student profile
-- Search and filter students
+⚠️ **Important**: Change default passwords in production!
 
-#### 1.3.2 Student-Class Relationship
-- Assign students to classrooms
-- View students by class
-- Unassign students from classes
-- Track student movement between classes
-- Class attendance tracking
+---
 
-#### 1.3.3 Student Assessment Tracking
-- Track assessment history per student
-- Prevent duplicate assessments (same test type for same material)
-- View student performance over time
-- Check if student has taken specific test type
-- Get all assessments for specific student and library
+## Logging In as Administrator (CLMD Coordinator)
 
-### 1.4 Classroom Management
+### After Login - What You See
 
-#### 1.4.1 Classroom Operations
-- Create classrooms with:
-  - Class name
-  - Grade level
-  - Section
-  - Teacher assignment
-  - School assignment
-- Edit classroom information
-- Archive classrooms (soft delete)
-- Unarchive archived classrooms
-- Delete classrooms
-- View classroom details
-- List active classrooms
-- List archived classrooms
+When you log in as **CLMD Coordinator**, you will be redirected to your **Dashboard**.
 
-#### 1.4.2 Class-Student Management
-- View all students in a class
-- Add students to class
-- Remove students from class
-- Track class capacity
-- Monitor unassessed students
+#### Dashboard Overview
 
-### 1.5 Reading Material Management (Library)
+Your dashboard displays:
+- **Top Navigation Menu** with options:
+  - Dashboard (current page)
+  - Library Management
+  - User Management
+  - Activity Logs
+  - Profile (your name with dropdown)
 
-#### 1.5.1 Material Creation
-- Upload reading materials with:
-  - Title
-  - Description
-  - Reading passage text
-  - File upload (PDF, DOC, DOCX, TXT)
-  - File size limit: 10MB
-  - Category selection
-  - Test type selection (Pre-test, Post-test)
-  - Grade level specification (Grade 11, Grade 12)
-  - Uploader tracking
-- Validate file types and sizes
-- Store file metadata
+- **Dashboard Statistics Cards** showing:
+  - Total Students (across all regions)
+  - Total Teachers
+  - Total Assessments
+  - Performance metrics
 
-#### 1.5.2 Material Management
-- View all materials
-- Search and filter materials
-- Edit material details
-- Activate/Deactivate materials
-- Archive materials (with reason)
-- Unarchive materials
-- Delete materials
-- Download material files
-- Export library data
+- **Charts and Graphs**:
+  - Performance distribution
+  - Assessment trends
+  - Regional comparisons
 
-#### 1.5.3 Question Management
-- Add multiple choice questions to materials
-- Minimum 1 question per material
-- Question format:
-  - Question text
-  - 4 answer options (A, B, C, D)
-  - Correct answer designation
-- Edit existing questions
-- Delete questions
-- View all questions for a material
-- Validation of question completeness
+---
 
-### 1.6 Assessment System
+### Workflow 1: Managing the Library (Reading Materials)
 
-#### 1.6.1 Assessment Workflow
-The system follows a structured 4-step assessment process:
+#### Step 1: Access Library Management
 
-**Step 1: Material Selection**
-- Teachers select appropriate reading material
-- Material must match student's grade level
-- Material must be active and not archived
+1. **Click "Library Management"** in the top navigation menu
+2. **You will see** a page showing:
+   - List of all reading materials (active and archived)
+   - Search bar to find materials
+   - Filter options (by grade level, test type, status)
+   - "Create New Material" button at the top
 
-**Step 2: Class and Student Selection**
-- Select classroom
-- Select student(s) for assessment
-- Check if student has already taken the test type
+#### Step 2: Create a New Reading Material
 
-**Step 3: Reading Phase**
-- Student reads the assigned passage
-- No time limit for reading phase
-- Teacher monitors progress
+1. **Click the "Create New Material" button**
+2. **Fill in the form**:
+   - **Title**: Enter a descriptive title (e.g., "Grade 11 Pre-Test - Short Story")
+   - **Passage Text**: Paste or type the full reading passage here
+   - **Grade Level**: Select either "11" or "12" from dropdown
+   - **Test Type**: Select "Pre-test" or "Post-test"
+   - **Description**: Optional - add any notes about the material
+   - **Upload File**: Click "Choose File" and select a PDF, DOC, DOCX, or TXT file (max 10MB)
+3. **Click "Create Material"**
+4. **You will be redirected** to the material management page where you can add questions
 
-**Step 4: Reading Level Evaluation**
-- Teacher evaluates student's reading progression:
-  - Word Level: Basic word recognition
-  - Phrase Level: Simple phrase reading
-  - Sentence Level: Complete sentence reading
-  - Paragraph Level: Full paragraph comprehension
-- Must follow progression sequence (word → phrase → sentence → paragraph)
-- Cannot skip levels
+#### Step 3: Add Questions to the Material
 
-**Step 5: Comprehension Questions**
-- Triggered only if student reaches "Paragraph Level"
-- Multiple choice format (A, B, C, D)
-- Minimum 1 question per material
-- Teacher records student answers
+1. **After creating the material**, you'll see a page with:
+   - Material details at the top
+   - "Add Questions" section below
+2. **To add a question**:
+   - **Question Text**: Type your question
+   - **Option A**: Enter first answer choice
+   - **Option B**: Enter second answer choice
+   - **Option C**: Enter third answer choice
+   - **Option D**: Enter fourth answer choice
+   - **Correct Answer**: Select which option (A, B, C, or D) is the correct answer
+   - Click **"Add Question"**
+3. **Repeat Step 2** for each question (minimum 1 question required)
+4. **Questions appear** in a list below, showing:
+   - Question number
+   - Question text
+   - All 4 options
+   - Correct answer highlighted
+   - Edit and Delete buttons
 
-**Step 6: Results Display**
-- Automatic scoring calculation
-- Performance level classification
-- Results display to teacher
+#### Step 4: Manage Existing Materials
 
-#### 1.6.2 Assessment Constraints
-- Grade Levels: Only Grade 11 and 12 supported
-- Test Types: Pre-test and Post-test only
-- Duplicate Prevention: Students cannot take the same test type twice for the same material
-- Reading Level Progression: Must follow word → phrase → sentence → paragraph sequence
-- Questions: Only appear if student reaches paragraph level
+**To View/Edit a Material**:
+1. In Library Management, **find the material** in the list
+2. **Click on the material title** or click "View"
+3. You'll see:
+   - Material details
+   - Associated file (with download link)
+   - List of questions
+   - Edit and Delete buttons
 
-#### 1.6.3 Assessment Scoring
-- Score Calculation: Number of correct answers
-- Maximum Score: Total number of questions
-- Percentage Calculation: (Score / Max Score) × 100
-- Performance Classification:
-  - **Independent Level**: 8+ correct answers
-  - **Instructional Level**: 5-7 correct answers
-  - **Frustration Level**: 0-4 correct answers
+**To Edit a Material**:
+1. Click **"Edit"** button
+2. Modify any field (title, passage, grade level, test type, file)
+3. Click **"Save Changes"**
 
-#### 1.6.4 Assessment Data Storage
-- Student assessment records with:
-  - Library reference
-  - Student reference
-  - Classroom reference
-  - Teacher reference
-  - Grade level
-  - Assessment type
-  - Test type (pre-test/post-test)
-  - Reading level achieved
-  - Score and percentage
-  - Performance level
-  - Assessment date
-  - Completion timestamp
-  - Evaluation notes (optional)
+**To Edit a Question**:
+1. Find the question in the material's question list
+2. Click **"Edit"** next to the question
+3. Modify question text, options, or correct answer
+4. Click **"Save Changes"**
 
-#### 1.6.5 Assessment Results Management
-- View individual assessment results
-- View all results for a teacher
-- Filter results by date range
-- Filter results by student
-- Filter results by material
-- Filter results by grade level
-- Export assessment data
-- Track assessment history
-- View performance trends
+**To Delete a Question**:
+1. Click **"Delete"** next to the question
+2. Confirm deletion
+   ⚠️ Note: You cannot delete the last remaining question
 
-### 1.7 Dashboard & Reporting
+**To Archive a Material**:
+1. Click **"Archive"** button next to the material
+2. Archived materials are hidden from teachers but not deleted
+3. To restore: Use filter to show "Archived", then click **"Unarchive"**
 
-#### 1.7.1 Dashboard Features by Role
+**To Activate/Deactivate**:
+- **Deactivate**: Makes material unavailable to teachers (they won't see it)
+- **Activate**: Makes material available again
 
-**Teacher Dashboard**
-- Total students in their classes
-- Total assessments conducted
-- Recent assessments
-- Student performance overview
-- Reading level trends
-- Performance distribution (Independent/Instructional/Frustration)
-- Unassessed students tracking
+---
 
-**School Coordinator Dashboard**
-- School-wide performance metrics
-- Total teachers and students
-- Assessment statistics for their school
-- Teacher activity monitoring
-- Student assessment tracking
-- Performance trends
+### Workflow 2: Managing Users
+
+#### Step 1: Access User Management
+
+1. **Click "User Management"** in the top navigation menu
+2. **You will see**:
+   - List of Division Coordinators you've created
+   - Search bar to find users
+   - Filter options
+   - "Create User" button
+
+#### Step 2: Create a New User (Division Coordinator)
+
+1. **Click "Create User" button**
+2. **Fill in the form**:
+   - **Name**: Enter full name
+   - **Email**: Enter unique email address
+   - **Password**: Enter initial password (minimum 8 characters)
+   - **Role**: Select "Division Coordinator" (this is the only role you can create)
+   - **Division**: Select from dropdown (required for Division Coordinator)
+3. **Click "Create User"**
+4. **The new user** will appear in your user list
+   ⚠️ **Important**: Inform the new user of their login credentials separately
+
+#### Step 3: View and Manage Users
+
+**To View User Details**:
+- Click on a user's name or email in the list
+- View their profile, activity, and created users
+
+**To Edit a User**:
+1. Click **"Edit"** next to the user
+2. Update information (name, email, password if needed)
+3. Click **"Save Changes"**
+
+**To Deactivate a User**:
+1. Click **"Deactivate"** next to the user
+2. Confirm the action
+3. User cannot log in, but data is preserved
+
+**To Reactivate a User**:
+1. Filter by "Deactivated" status
+2. Click **"Reactivate"** next to the user
+3. User can log in again
+
+---
+
+### Workflow 3: Viewing Activity Logs
+
+#### Step 1: Access Activity Logs
+
+1. **Click "Activity Logs"** in the top navigation menu
+2. **You will see**:
+   - List of all system activities
+   - Filters (by date, user, action type)
+   - Export button
+
+#### Step 2: Review Activities
+
+- Each log entry shows:
+  - Timestamp
+  - User who performed action
+  - Action type (login, create, update, delete)
+  - Resource affected
+  - Details
+
+#### Step 3: Export Logs
+
+1. **Click "Export Activity Logs"**
+2. Select date range (optional)
+3. CSV file downloads automatically
+
+---
+
+### Workflow 4: Dashboard Overview
+
+#### What You Can See
+
+When you're on the dashboard:
+
+1. **Statistics Overview**:
+   - Total students in the system
+   - Total teachers
+   - Total assessments completed
+   - Performance breakdowns
+
+2. **Charts and Visualizations**:
+   - Performance distribution (pie chart)
+   - Assessment trends over time (line chart)
+   - Regional comparisons
+   - Pre-test vs Post-test improvements
+
+3. **Quick Actions**:
+   - Export data button
+   - View detailed reports
+   - Access to all major sections
+
+#### Exporting Data
+
+1. **Click "Export Data"** on the dashboard
+2. Data exports as CSV file
+3. File includes all data in your scope (entire system)
+
+---
+
+## Logging In as Teacher
+
+### After Login - What You See
+
+When you log in as **Teacher**, you will be redirected to your **Dashboard**.
+
+#### Dashboard Overview
+
+Your dashboard displays:
+- **Top Navigation Menu** with:
+  - Dashboard (current page)
+  - Reading Materials
+  - My Classes
+  - Assessment Results
+  - Unassessed Students
+  - Profile (your name with dropdown)
+
+- **Dashboard Statistics** showing:
+  - Your total students
+  - Your total classes
+  - Completed assessments
+  - Students needing assessment
+  - Performance distribution for your students
+
+- **Charts**:
+  - Your students' performance trends
+  - Reading level progression
+  - Assessment completion status
+
+---
+
+### Workflow 1: Managing Your Classes
+
+#### Step 1: Access My Classes
+
+1. **Click "My Classes"** in the top navigation menu
+2. **You will see**:
+   - List of your active classes
+   - "Create New Class" button
+   - Filter options (active/archived)
+
+#### Step 2: Create a New Class
+
+1. **Click "Create New Class" button**
+2. **Fill in the form**:
+   - **Class Name**: Enter name (e.g., "Grade 11 - Section A")
+   - **Grade Level**: Select "11" or "12" from dropdown
+   - **Section**: Enter section identifier (optional)
+   - **Subject**: Enter subject name (optional)
+   - **Description**: Add any notes (optional)
+3. **Click "Create Class"**
+4. **Your new class** appears in the classes list
+
+#### Step 3: View Class Details and Manage Students
+
+1. **Click on a class name** in the list
+2. **You will see**:
+   - Class information
+   - List of students in this class
+   - "Add Student" button
+   - "Edit Class" and "Delete Class" buttons
+
+#### Step 4: Add Students to a Class
+
+1. **Click "Add Student" button**
+2. **Fill in the form**:
+   - **First Name**: Enter student's first name
+   - **Last Name**: Enter student's last name
+   - **Student ID**: Enter ID number (optional)
+   - **Notes**: Any additional information (optional)
+3. **Click "Add Student"**
+4. **Student appears** in the class roster
+
+#### Step 5: Edit Student Information
+
+1. **Find the student** in the class roster
+2. **Click "Edit"** next to the student's name
+3. **Update information** (name, ID, notes)
+4. **Click "Save Changes"**
+
+#### Step 6: Delete a Student
+
+⚠️ **Warning**: This will also delete the student's assessment records.
+
+1. **Click "Delete"** next to the student
+2. **Confirm deletion**
+3. Student is permanently removed
+
+#### Step 7: Archive or Delete a Class
+
+**To Archive a Class**:
+1. **Click "Archive"** next to the class
+2. Class is hidden but not deleted
+3. To restore: Filter by "Archived", then click **"Unarchive"**
+
+**To Delete a Class**:
+⚠️ **Warning**: This deletes the class and ALL student data and assessments.
+
+1. **Click "Delete"** next to the class
+2. **Confirm deletion**
+3. Class is permanently removed
+
+---
+
+### Workflow 2: Accessing Reading Materials
+
+#### Step 1: View Available Materials
+
+1. **Click "Reading Materials"** in the top navigation menu
+2. **You will see**:
+   - Cards showing available reading materials
+   - Filter options:
+     - **Test Type**: Pre-test or Post-test dropdown
+     - **Grade Level**: Filter by grade (only shows grades you teach)
+   - Each material card shows:
+     - Title
+     - Grade level
+     - Test type
+     - Number of questions
+     - Upload date
+
+#### Step 2: View Material Details
+
+1. **Click on a material card**
+2. **You will see**:
+   - Full material information
+   - Passage text
+   - Download button (for PDF/DOC file if available)
+   - Preview of questions
+   - "Start Assessment" button
+
+#### Step 3: Download Material File
+
+1. **Click "Download"** button on material details page
+2. **File downloads** to your device (PDF, DOC, DOCX, or TXT)
+3. **You can print or share** this file with students
+
+---
+
+### Workflow 3: Conducting an Assessment
+
+This is a **4-step process** that must be completed in one session.
+
+#### Step 1: Select Material and Start Assessment
+
+1. **Go to Reading Materials**
+2. **Click on a material** you want to use
+3. **Click "Start Assessment"** button
+4. **Select Class**:
+   - Choose the class from dropdown
+   - Only classes matching the material's grade level are shown
+5. **Select Students**:
+   - Check boxes next to individual students, OR
+   - Select "Select All" checkbox
+   - ⚠️ Students who already took this test type are disabled (cannot select)
+6. **Click "Continue to Assessment"**
+
+#### Step 2: Reading Phase
+
+1. **Present the material** to the student:
+   - Show on screen, OR
+   - Print/download the file
+2. **Let the student read** at their own pace
+   - **No time limit** - don't rush
+3. **Monitor the student** as they read
+4. **When student finishes reading**, click **"Student Has Finished Reading"** button
+5. **System proceeds** to next phase
+
+#### Step 3: Reading Level Evaluation
+
+1. **Based on your observation**, evaluate the student's reading:
+   - **Word Level**: Can read individual words
+   - **Phrase Level**: Can read short phrases
+   - **Sentence Level**: Can read complete sentences
+   - **Paragraph Level**: Can read paragraphs with comprehension
+2. **Select the highest level** the student achieved
+   - ⚠️ Levels must progress: Word → Phrase → Sentence → Paragraph
+3. **Click "Continue"**
+
+**What Happens Next**:
+- If student reached **Paragraph Level**: System proceeds to questions
+- If student did **NOT** reach Paragraph Level: Assessment ends here (no questions)
+
+#### Step 4: Comprehension Questions
+
+**Note**: This step only appears if student reached Paragraph Level.
+
+1. **Questions appear** on screen (one at a time or all together)
+2. **For each question**:
+   - Read the question to the student
+   - Select the student's answer (A, B, C, or D)
+   - Move to next question
+3. **Review all answers** before submitting
+4. **Click "Submit Assessment"** when done
+5. **Results page appears** immediately showing:
+   - Reading level achieved
+   - Number of questions answered
+   - Number correct
+   - Performance level (Independent/Instructional/Frustration)
+   - Score percentage
+
+**Performance Levels**:
+- **Independent Level**: 8+ correct answers
+- **Instructional Level**: 5-7 correct answers
+- **Frustration Level**: 0-4 correct answers
+
+---
+
+### Workflow 4: Viewing Assessment Results
+
+#### Step 1: View All Results
+
+1. **Click "Assessment Results"** in the top navigation menu
+2. **You will see**:
+   - List of all completed assessments
+   - Filters:
+     - By class
+     - By student name
+     - By date range
+     - By test type (Pre-test/Post-test)
+   - Each result shows:
+     - Student name
+     - Material title
+     - Test type
+     - Date completed
+     - Reading level
+     - Score and performance level
+
+#### Step 2: View Individual Assessment Details
+
+1. **Click on a result** in the list
+2. **You will see**:
+   - Full assessment details
+   - Student information
+   - Material used
+   - Reading level achieved
+   - All questions with student's answers
+   - Correct/incorrect indicators
+   - Final score and performance classification
+
+#### Step 3: Export Results
+
+1. **Use filters** to select specific results (optional)
+2. **Click "Export"** button
+3. **CSV file downloads** with all filtered results
+
+---
+
+### Workflow 5: Tracking Unassessed Students
+
+#### Step 1: Access Unassessed Students
+
+1. **Click "Unassessed Students"** in the top navigation menu
+2. **You will see**:
+   - List of students who need assessment
+   - Filters:
+     - By test type (Pre-test, Post-test, or Both)
+     - By class
+     - By grade level
+
+#### Step 2: Use the List
+
+- **See which students** haven't taken:
+  - Pre-test only
+  - Post-test only
+  - Neither test
+- **Click on a student** to view their details
+- **Use this list** to ensure all students are assessed
+
+---
+
+### Workflow 6: Viewing Your Dashboard
+
+#### What Your Dashboard Shows
+
+1. **Quick Statistics**:
+   - Total Students (in all your classes)
+   - Total Classes
+   - Completed Assessments
+   - Unassessed Students count
+
+2. **Performance Charts**:
+   - Your students' reading level distribution
+   - Pre-test vs Post-test comparison
+   - Improvement trends
+   - Performance by class
+
+3. **Quick Actions**:
+   - Links to create new class
+   - Links to start new assessment
+   - Links to view results
+
+---
+
+## Logging In as Coordinator
+
+Coordinators have different levels: School Coordinator, District Coordinator, and Division Coordinator. They have similar workflows with different scopes.
+
+### After Login - What You See
+
+When you log in as any **Coordinator**, you will be redirected to your **Dashboard**.
+
+#### Dashboard Overview
+
+Your dashboard shows:
+- **Top Navigation Menu** with:
+  - Dashboard
+  - User Management
+  - Unassessed Students (School and District Coordinators)
+  - Profile
+
+- **Dashboard Statistics** for your scope:
+  - Total students in your scope
+  - Total teachers/coordinators you manage
+  - Total assessments
+  - Performance metrics
+
+- **Charts**:
+  - Performance trends for your scope
+  - Comparison charts (by school/district if applicable)
+
+---
+
+### Workflow 1: Managing Users (Creating Users)
+
+**Who can create what**:
+- **School Coordinator** → Creates **Teachers**
+- **District Coordinator** → Creates **School Coordinators**
+- **Division Coordinator** → Creates **District Coordinators**
+
+#### Step 1: Access User Management
+
+1. **Click "User Management"** in the top navigation menu
+2. **You will see**:
+   - List of users you've created (only one level below you)
+   - Search bar
+   - "Create User" button
+
+#### Step 2: Create a New User
+
+1. **Click "Create User" button**
+2. **Fill in the form**:
+   - **Name**: Enter full name
+   - **Email**: Enter unique email
+   - **Password**: Enter initial password (min 8 characters)
+   - **Role**: Select the role you can create (dropdown shows only your allowed roles)
+   - **Location Assignments**: 
+     - If creating **Teacher** or **School Coordinator**: Select Division, District, and School
+     - If creating **District Coordinator**: Select Division and District
+     - If creating **Division Coordinator**: Select Division only
+3. **Click "Create User"**
+4. **User appears** in your list
+   ⚠️ **Important**: Inform the new user of their credentials separately
+
+#### Step 3: Manage Existing Users
+
+**To Edit**:
+- Click "Edit" next to user
+- Update information
+- Save changes
+
+**To Deactivate**:
+- Click "Deactivate" next to user
+- User cannot log in but data is preserved
+
+**To Reactivate**:
+- Filter by "Deactivated"
+- Click "Reactivate"
+
+---
+
+### Workflow 2: Viewing Reports and Dashboard
+
+#### What Your Dashboard Shows
+
+**School Coordinator Dashboard**:
+- School-wide statistics
+- Teacher activity
+- Student assessment completion
+- Performance trends for your school
 - Unassessed students list
-- Comparative analysis within school
 
-**District Coordinator Dashboard**
-- District-wide performance overview
-- Total schools, teachers, and students
+**District Coordinator Dashboard**:
+- District-wide overview
 - School comparison metrics
-- Assessment statistics for their district
-- Regional performance trends
-- Performance distribution across schools
-- Unassessed students across district
-- Comparative analysis between schools
+- Teacher and student statistics across all schools in district
+- Performance by school
 
-**Division Coordinator Dashboard**
+**Division Coordinator Dashboard**:
 - Division-wide comprehensive reports
 - District performance comparison
-- Total districts, schools, teachers, students
-- System-wide statistics for their division
+- All statistics for your division
 - Advanced trend analysis
-- Performance distribution across districts
-- Unassessed students tracking
-- Comparative analysis between districts
 
-**CLMD Coordinator Dashboard**
-- Complete system overview
-- All regions, divisions, and districts
-- Comprehensive performance metrics
-- System administration tools
-- Total students, teachers, assessments
-- Overall system trends
-- Performance distribution across all levels
-- Export capabilities
-- Advanced analytics
+#### Exporting Data
 
-#### 1.7.2 Statistical Analysis Features
-- Trend calculations using linear regression
-- Performance metric calculations
-- Automatic improvement percentage calculations
-- Correlation coefficient calculation
-- Slope calculation (least squares method)
-- Data validation for statistical accuracy
-- Minimum data requirements (3 points for reliable trends)
-- Monthly trend tracking
-- Reading level trend analysis
-- Grade-specific data analysis
-
-#### 1.7.3 Reporting Capabilities
-- Export comprehensive data to CSV
-- Role-based filtered exports
-- Date-stamped file generation
-- Export system-wide data
-- Export filtered data by location
-- Export user data
-- Export assessment data
-- Export library data
-- Export activity logs
-
-### 1.8 Activity Logging
-
-#### 1.8.1 Activity Tracking
-- Log all user actions
-- Track assessment completions
-- Track material uploads
-- Track user creations
-- Track account activations/deactivations
-- Track material archiving
-- Track question modifications
-- Log system errors
-
-#### 1.8.2 Activity Log Features
-- View activity logs
-- Filter logs by user
-- Filter logs by date range
-- Filter logs by activity type
-- Export activity logs
-- Activity log statistics
-- Detailed log information
-
-### 1.9 File Management
-
-#### 1.9.1 File Upload Support
-- Supported formats: PDF, DOC, DOCX, TXT
-- Maximum file size: 10MB per file
-- File type validation
-- File size validation
-- Automatic storage to secure directory
-- File metadata storage
-
-#### 1.9.2 File Operations
-- Download files
-- File serving
-- Storage link creation
-- Automatic cleanup of old files when updating materials
-- Secure file storage
-
-### 1.10 Data Validation & Business Rules
-
-#### 1.10.1 Input Validation
-- Email format validation
-- Password strength requirements
-- Role enum validation
-- Location assignment validation
-- File type and size validation
-- Question format validation
-- Reading level progression validation
-- Duplicate assessment prevention
-- Grade level restrictions
-
-#### 1.10.2 Data Integrity
-- Foreign key constraints
-- Cascade delete rules
-- Unique constraints (email, student IDs)
-- Required field validation
-- Data range validation
-- Null value handling
+1. **Click "Export Data"** on dashboard
+2. **Select filters** (optional):
+   - Date range
+   - Specific schools/districts (if applicable)
+3. **CSV file downloads** with all data in your scope
 
 ---
 
-## 2. NON-FUNCTIONAL REQUIREMENTS
+### Workflow 3: Tracking Unassessed Students (School & District Coordinators)
 
-### 2.1 Performance Requirements
+#### Step 1: Access Unassessed Students
 
-#### 2.1.1 Response Time
-- Page load time: < 3 seconds
-- Dashboard loading: < 5 seconds
-- Search/filter operations: < 2 seconds
-- File upload: < 10 seconds (for max file size)
-- Database queries: Optimized for large datasets
-- Assessment submission: Near-instantaneous feedback
+1. **Click "Unassessed Students"** in navigation menu
+2. **You will see**:
+   - List of students in your scope who need assessment
+   - Filters:
+     - Test type (Pre-test, Post-test, Both)
+     - School (District Coordinators only)
+     - Grade level
 
-#### 2.1.2 Scalability
-- Support for multiple concurrent users
-- Efficient handling of large datasets
-- Optimized database queries
-- Lazy loading for large lists
-- Pagination for data display
-- Caching mechanisms for frequent queries
+#### Step 2: Use the Information
 
-#### 2.1.3 System Capacity
-- Support for multiple regions (currently Region 1)
-- Support for multiple divisions per region
-- Support for multiple districts per division
-- Support for multiple schools per district
-- Support for multiple classes per school
-- Support for multiple students per class
-- Support for multiple assessments per student
-- Storage capacity for reading materials
-
-### 2.2 Security Requirements
-
-#### 2.2.1 Authentication & Authorization
-- Secure password hashing (bcrypt)
-- Session-based authentication
-- Role-based access control (RBAC)
-- Hierarchical permission model
-- Location-based data access control
-- CSRF protection
-- XSS protection
-- SQL injection prevention (using ORM)
-
-#### 2.2.2 Data Security
-- Encrypted password storage
-- Secure file upload handling
-- Input sanitization
-- Output escaping
-- Secure session management
-- HTTPS support (recommended)
-- Data isolation between hierarchical levels
-
-#### 2.2.3 Access Control
-- Unauthorized access prevention
-- Privilege escalation prevention
-- User deactivation functionality
-- Account lockout mechanism
-- Audit trail for sensitive operations
-- Terms of Service acceptance tracking
-
-### 2.3 Usability Requirements
-
-#### 2.3.1 User Interface
-- Intuitive and user-friendly interface
-- Consistent navigation across all pages
-- Clear error messages
-- Helpful validation messages
-- Responsive design for different screen sizes
-- Modern and professional appearance
-- Clear visual hierarchy
-- Accessible color schemes
-
-#### 2.3.2 User Experience
-- Easy-to-follow assessment workflow
-- Clear instructions for each step
-- Progress indicators
-- Confirmation dialogs for critical actions
-- Success/error notifications
-- Search and filter capabilities
-- Sort functionality
-- Export capabilities
-
-#### 2.3.3 Browser Compatibility
-- Support for modern web browsers:
-  - Google Chrome (latest)
-  - Mozilla Firefox (latest)
-  - Safari (latest)
-  - Microsoft Edge (latest)
-- Cross-browser compatibility
-- Responsive design for mobile devices
-
-### 2.4 Reliability Requirements
-
-#### 2.4.1 System Availability
-- 99% uptime requirement
-- Graceful error handling
-- Proper exception management
-- Transaction rollback for failed operations
-- Backup and recovery mechanisms
-- Data backup procedures
-
-#### 2.4.2 Error Handling
-- Comprehensive error handling
-- User-friendly error messages
-- Logging of system errors
-- Graceful degradation
-- Input validation to prevent errors
-- Database transaction management
-
-#### 2.4.3 Data Integrity
-- Database constraints and validations
-- Referential integrity
-- Data consistency checks
-- Orphaned record prevention
-- Cascade delete handling
-- Soft delete for important entities
-
-### 2.5 Maintainability Requirements
-
-#### 2.5.1 Code Quality
-- Clean and readable code
-- Modular architecture
-- Separation of concerns
-- Code documentation
-- Following Laravel best practices
-- SOLID principles adherence
-- Repository pattern usage
-
-#### 2.5.2 Extensibility
-- Easy to add new features
-- Modular design
-- Configurable settings
-- Plugin architecture support
-- API endpoints for future integration
-- Database migration support
-
-#### 2.5.3 Documentation
-- Comprehensive user manual
-- Technical documentation
-- Deployment guide
-- System testing notes
-- Code comments
-- Database schema documentation
-- API documentation
-
-### 2.6 Portability Requirements
-
-#### 2.6.1 Platform Independence
-- Web-based application (browser access)
-- No client installation required
-- Cross-platform compatibility
-- Server compatibility (Linux/Windows)
-
-#### 2.6.2 Database Compatibility
-- MySQL database support
-- SQLite support (development)
-- Database migration support
-- Database seeders for initial data
-
-#### 2.6.3 Deployment Flexibility
-- Simple deployment process
-- Environment configuration
-- Docker support (optional)
-- Cloud deployment ready
-
-### 2.7 Testing Requirements
-
-#### 2.7.1 Testing Types
-- Unit testing
-- Integration testing
-- Feature testing
-- Performance testing
-- Security testing
-- User acceptance testing
-
-#### 2.7.2 Test Coverage
-- Core functionality tests
-- Authentication tests
-- Authorization tests
-- Data validation tests
-- Business logic tests
-- API endpoint tests
-
-### 2.8 Compliance Requirements
-
-#### 2.8.1 Data Privacy
-- Personal data protection
-- Secure data storage
-- Access control to personal information
-- Data retention policies
-- Terms of Service acceptance
-
-#### 2.8.2 Educational Standards
-- Alignment with educational assessment standards
-- Grading methodology compliance
-- Student progress tracking standards
-- Reporting standards
-
-### 2.9 Operational Requirements
-
-#### 2.9.1 Backup & Recovery
-- Regular database backups
-- File storage backups
-- Backup automation
-- Recovery procedures
-- Data restoration capabilities
-
-#### 2.9.2 Monitoring & Logging
-- Error logging
-- Activity logging
-- Performance monitoring
-- User activity tracking
-- System health checks
-
-#### 2.9.3 Update & Maintenance
-- System update procedures
-- Patch management
-- Feature updates
-- Bug fixes
-- Security patches
+- **Identify** which students need assessment
+- **See** which teachers' classes have unassessed students
+- **Track** assessment completion progress
+- **Export** the list if needed
 
 ---
 
-## 3. CONSTRAINTS & LIMITATIONS
+## Quick Reference
 
-### 3.1 Technical Constraints
-- PHP 8.1 or higher required
-- Laravel 11 framework
-- MySQL 5.7+ or SQLite
-- Composer dependency management
-- Storage space for file uploads
+### Navigation by Role
 
-### 3.2 Functional Constraints
-- Only Region 1 supported currently
-- Only Grade 11 and 12 supported
-- Pre-test and Post-test only
-- No mid-term assessments
-- Maximum 10MB file uploads
-- Reading level progression must be sequential
-- Questions only appear at paragraph level
+#### CLMD Coordinator (Admin)
+- Dashboard
+- Library Management
+- User Management
+- Activity Logs
+- Profile
 
-### 3.3 Business Constraints
-- User creation follows strict hierarchy
-- Each role can only create users one level below
-- Location assignments are mandatory for most roles
-- Terms of Service must be accepted before use
-- Assessment duplicates are prevented
+#### Teacher
+- Dashboard
+- Reading Materials
+- My Classes
+- Assessment Results
+- Unassessed Students
+- Profile
 
-### 3.4 Operational Constraints
-- Requires stable internet connection
-- Browser JavaScript enabled
-- Modern web browser required
-- Administrator access for deployment
-- Database access for migrations
+#### School Coordinator
+- Dashboard
+- User Management
+- Unassessed Students
+- Profile
 
----
+#### District Coordinator
+- Dashboard
+- User Management
+- Unassessed Students
+- Profile
 
-## 4. ASSUMPTIONS
-
-1. All users have basic computer literacy
-2. Users have stable internet connection
-3. Users accept Terms of Service before using the system
-4. Teachers conduct assessments in classroom setting
-5. File uploads are legitimate educational materials
-6. User roles and locations are correctly assigned
-7. System is maintained and monitored regularly
-8. Regular backups are performed
-9. PHP server is properly configured
-10. Database is maintained and optimized
+#### Division Coordinator
+- Dashboard
+- User Management
+- Profile
 
 ---
 
-## 5. GLOSSARY
+### Important Rules
 
-- **TALAS**: Teaching and Learning Assessment System
-- **CLMD**: Curriculum and Learning Management Division
-- **Pre-test**: Assessment conducted before instruction
-- **Post-test**: Assessment conducted after instruction
-- **Reading Level**: Student's progression in reading skills (Word, Phrase, Sentence, Paragraph)
-- **Performance Level**: Classification of student performance (Independent, Instructional, Frustration)
-- **Strand**: Specialized subject track in Senior High School (e.g., STEM, ABM, HUMSS)
-- **Archived**: Soft delete status for preserving data history
-- **Region 1**: Ilocos Region in the Philippines
-- **Soft Delete**: Marking records as deleted without actually removing them from database
+✅ **MUST DO**:
+- Accept Terms of Service on first login
+- Use Grade 11 or 12 only
+- Progress reading levels sequentially (Word → Phrase → Sentence → Paragraph)
+- Complete assessments in one session
+
+❌ **CANNOT DO**:
+- Retake same test type for same student
+- Create users at your level (only one level below)
+- Upload files larger than 10MB
+- Skip reading level progression
 
 ---
 
-*This requirements document covers TALAS v1.0 Reading Assessment System and should be updated as new features are added or modified.*
+### Assessment Process Summary
 
+1. **Select Material** → Choose pre-test or post-test material
+2. **Select Class & Students** → Choose which students to assess
+3. **Reading Phase** → Student reads material (no time limit)
+4. **Reading Level** → Teacher evaluates highest level achieved
+5. **Questions** → Only if student reached Paragraph Level
+6. **Results** → Automatic scoring and classification
+
+---
+
+### Getting Help
+
+**If you need assistance**:
+1. Check this manual first
+2. Contact your coordinator:
+   - Teachers → School Coordinator
+   - School Coordinators → District Coordinator
+   - District Coordinators → Division Coordinator
+   - Division Coordinators → CLMD Coordinator
+
+**When reporting issues**, include:
+- Your role
+- What you were trying to do
+- Error message (if any)
+- Steps you took
+
+---
+
+**End of User Manual**
+
+*For system updates and additional support, contact your CLMD Coordinator or system administrator.*
