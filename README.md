@@ -257,15 +257,7 @@ When you're on the dashboard:
    - Pre-test vs Post-test improvements
 
 3. **Quick Actions**:
-   - Export data button
-   - View detailed reports
    - Access to all major sections
-
-#### Exporting Data
-
-1. **Click "Export Data"** on the dashboard
-2. Data exports as CSV file
-3. File includes all data in your scope (entire system)
 
 ---
 
