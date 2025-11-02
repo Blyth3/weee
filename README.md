@@ -1,7 +1,7 @@
-# 📚 TALAS Reading Assessment System - User Manual
+# 📚 TALAS: DATA ANALYTICS FOR READING COMPREHENSION IN FILIPINO - User Manual
 
 **Version:** 1.0  
-**System:** Teaching and Learning Assessment System (TALAS)
+**System:** TALAS: DATA ANALYTICS FOR READING COMPREHENSION IN FILIPINO 
 
 ---
 
